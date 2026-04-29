@@ -1,0 +1,3 @@
+[config.k8s-jobs.two.hello]
+image = "bash"
+args = ["-c", "hello from namespace two"]

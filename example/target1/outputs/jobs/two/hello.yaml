@@ -1,0 +1,15 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello
+  namespace: two
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - -c
+        - hello from namespace two
+        image: bash
+        name: hello

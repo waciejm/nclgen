@@ -1,0 +1,13 @@
+common_inputs = ["ncl.gen/import/modules.ncl"]
+import_dirs = ["ncl.gen/import"]
+
+[targets.target1]
+inputs = ["target1/input.ncl"]
+outputs_field = "config.outputs"
+outputs_dir = "target1/outputs"
+
+[targets.target2]
+inputs = ["target2/**/*.toml"]
+inputs_exclude = ["target2/generated/**/*"]
+outputs_field = "config.outputs"
+outputs_dir = "target2/generated"

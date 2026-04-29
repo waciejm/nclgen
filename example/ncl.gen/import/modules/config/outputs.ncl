@@ -1,0 +1,7 @@
+{
+  config = {
+    outputs
+      | { _ | String }
+      = {},
+  },
+}
