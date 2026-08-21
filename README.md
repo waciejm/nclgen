@@ -29,15 +29,15 @@ You can override the binary used using the `NCLGEN_NICKEL_PATH` env var.
 ### Nickel Language Server
 
 In order for Nickel Language Server to resolve imports that will be available during `nclgen`
-evaluation, you can set the `NICKEL_IMPORT_PATH` env var to the output of `nclgen imports`.
+evaluation, you can add the output of `nclgen imports` to the `NICKEL_IMPORT_PATH` env var.
 
 ```bash
-export NICKEL_IMPORT_PATH="$(nclgen imports)"
-```
-
-If you are already using other import dirs via `NICKEL_IMPORT_PATH`, extend it
-by joining the output of `nclgen imports` and `NICKEL_IMPORT_PATH` with `:`.
-
-```bash
-export NICKEL_IMPORT_PATH="$(nclgen imports):$NICKEL_IMPORT_PATH"
+readonly NCLGEN_IMPORTS="$(nclgen imports)"
+if [[ -n "$NCLGEN_IMPORTS" ]]; then
+  if [[ -z "$NICKEL_IMPORT_PATH" ]]; then
+    export NICKEL_IMPORT_PATH="$NCLGEN_IMPORTS"
+  else
+    export NICKEL_IMPORT_PATH="$NCLGEN_IMPORTS:$NICKEL_IMPORT_PATH"
+  fi
+fi
 ```
