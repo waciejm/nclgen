@@ -2,7 +2,7 @@
 
 ## How it works
 
-`nclgen` generates resources in directories relative to the `project root`,
+`nclgen` generates resources in directories relative to the project root,
 which is a directory that contains a `ncl.gen` subdir.
 
 `nclgen generate` generates outputs based on `targets` definitions inside the `ncl.gen/config.toml` file.
@@ -19,7 +19,7 @@ See `example` directory for a quick look at how a `nclgen` project works.
 
 `nclgen` requires that the Nickel evaluation to produce a record of strings:
 
-- The fields of the record must be file paths relative to `project root`
+- The fields of the record must be file paths relative to project root
   and can't contain any `/.` or `/..` components.
 
 - The string values become the content of the generated files.
