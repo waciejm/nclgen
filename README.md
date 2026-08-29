@@ -17,10 +17,10 @@ See `example` directory for a quick look at how a `nclgen` project works.
 
 ## Output format
 
-`nclgen` requires that the Nickel evaluation to produce a record of strings:
+`nclgen` requires the Nickel evaluation to produce a record of strings:
 
 - The fields of the record must be file paths relative to project root
-  and can't contain any `/.` or `/..` components.
+  and can't contain any `/./` or `/../` components.
 
 - The string values become the content of the generated files.
 

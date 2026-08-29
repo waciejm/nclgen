@@ -105,6 +105,35 @@ impl Project {
                 .collect::<BTreeSet<_>>(),
         );
 
+        let eval_contracts_before_exclude = config
+            .eval_contracts
+            .iter()
+            .map(|i| {
+                i.resolve()
+                    .with_context(|| format!("failed to resolve eval contracts: {}", i))
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .flatten()
+            .collect::<BTreeSet<_>>();
+        let eval_contracts_exclude = config
+            .eval_contracts_exclude
+            .iter()
+            .map(|i| {
+                i.resolve()
+                    .with_context(|| format!("failed to resolve eval contracts exclude: {}", i))
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .flatten()
+            .collect::<BTreeSet<_>>();
+        let eval_contracts = Rc::new(
+            eval_contracts_before_exclude
+                .difference(&eval_contracts_exclude)
+                .cloned()
+                .collect::<BTreeSet<_>>(),
+        );
+
         drop(restore_current_dir_guard);
 
         let targets = config
@@ -124,6 +153,7 @@ impl Project {
                         &project_root,
                         Rc::clone(&common_inputs),
                         Rc::clone(&import_dirs),
+                        Rc::clone(&eval_contracts),
                         target_config,
                     )
                     .with_context(|| format!("failed to resolve target {}", target_name))?,

@@ -13,20 +13,43 @@ const CONFIG_PATH: &str = "config.toml";
 #[serde(deny_unknown_fields)]
 pub struct Config {
     /// Glob pattern of files which should be merged in the evaluaton for every target.
+    ///
     /// Relative to project root.
     pub common_inputs: Vec<GlobPattern>,
     /// Glob pattern of files which will be excluded from `inputs` matches.
+    ///
     /// Relative to project root.
     #[serde(default)]
     pub common_inputs_exclude: Vec<GlobPattern>,
     /// Glob pattern of dirs which should be added to import dirs for all targets.
+    ///
     /// Relative to project root.
     #[serde(default)]
     pub import_dirs: Vec<GlobPattern>,
     /// Glob pattern of dirs which will be excluded from `import_dirs` matches.
+    ///
     /// Relative to project root.
     #[serde(default)]
     pub import_dirs_exclude: Vec<GlobPattern>,
+    /// Contracts that will be applied to the evaluation for the whole target.
+    ///
+    /// If list not empty, before executing `nickel export` to obtain target outputs,
+    /// `nclgen` will execute `nickel eval` to evaluate the same inputs that will
+    /// be used for `nickel export`, but will also apply these contracts to the
+    /// value of the whole evaluation.
+    ///
+    /// If list empty, only the value of `outputs_field` for a given target
+    /// will be evaluated. Other field might not be evaluated and have contracts
+    /// applied that would fail if evaluated, but will be silently ignored instead.
+    ///
+    /// Relative to project root.
+    #[serde(default)]
+    pub eval_contracts: Vec<GlobPattern>,
+    /// Glob pattern of files which will be excluded from `eval_contracts` matches.
+    ///
+    /// Relative to project root.
+    #[serde(default)]
+    pub eval_contracts_exclude: Vec<GlobPattern>,
     /// Targets for evaluating and generating resources.
     pub targets: BTreeMap<String, ConfigTarget>,
 }
@@ -35,9 +58,11 @@ pub struct Config {
 #[serde(deny_unknown_fields)]
 pub struct ConfigTarget {
     /// Glob pattern of files which should be merged in the evaluaton for this target.
+    ///
     /// Relative to project root.
     pub inputs: Vec<GlobPattern>,
     /// Glob pattern of files which will be excluded from `inputs` matches.
+    ///
     /// Relative to project root.
     #[serde(default)]
     pub inputs_exclude: Vec<GlobPattern>,
@@ -47,6 +72,7 @@ pub struct ConfigTarget {
     #[serde(default)]
     pub outputs_field: String,
     /// Path under which to place the outputs of this target.
+    ///
     /// Relative to project root.
     pub outputs_dir: PathBuf,
 }

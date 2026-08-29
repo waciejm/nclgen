@@ -1,5 +1,6 @@
 common_inputs = ["ncl.gen/import/modules.ncl"]
 import_dirs = ["ncl.gen/import"]
+eval_contracts = ["ncl.gen/contract.ncl"]
 
 [targets.target1]
 inputs = ["target1/input.ncl"]

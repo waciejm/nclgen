@@ -7,7 +7,7 @@ use std::{
 use anyhow::{self, Context};
 
 use crate::{
-    external::nickel::nickel_export,
+    external::nickel::{nickel_eval, nickel_export},
     project::{config::ConfigTarget, outputs::TargetOutputs},
 };
 
@@ -15,6 +15,7 @@ use crate::{
 pub struct ProjectTarget {
     common_inputs: Rc<BTreeSet<PathBuf>>,
     import_dirs: Rc<BTreeSet<PathBuf>>,
+    eval_contracts: Rc<BTreeSet<PathBuf>>,
     inputs: BTreeSet<PathBuf>,
     outputs_field: Option<String>,
     outputs_dir: PathBuf,
@@ -25,6 +26,7 @@ impl ProjectTarget {
         project_root: &Path,
         common_inputs: Rc<BTreeSet<PathBuf>>,
         import_dirs: Rc<BTreeSet<PathBuf>>,
+        eval_contracts: Rc<BTreeSet<PathBuf>>,
         config: &ConfigTarget,
     ) -> anyhow::Result<Self> {
         let initial_current_dir = std::env::current_dir().context("failed to get current dir")?;
@@ -70,6 +72,7 @@ impl ProjectTarget {
         Ok(Self {
             common_inputs,
             import_dirs,
+            eval_contracts,
             inputs,
             outputs_field: if config.outputs_field.is_empty() {
                 None
@@ -81,7 +84,18 @@ impl ProjectTarget {
     }
 
     pub fn build_outputs(&self) -> anyhow::Result<TargetOutputs> {
-        let nickel_output = nickel_export(
+        if !self.eval_contracts.is_empty() {
+            nickel_eval(
+                self.import_dirs.iter().map(PathBuf::as_path),
+                self.common_inputs
+                    .iter()
+                    .map(PathBuf::as_path)
+                    .chain(self.inputs.iter().map(PathBuf::as_path)),
+                self.eval_contracts.iter().map(PathBuf::as_path),
+            )
+            .context("failed to evaluate before generating outputs")?;
+        }
+        let nickel_export_output = nickel_export(
             self.import_dirs.iter().map(PathBuf::as_path),
             self.common_inputs
                 .iter()
@@ -90,8 +104,12 @@ impl ProjectTarget {
             self.outputs_field.as_deref(),
         )
         .context("failed to generate outputs with nickel export")?;
-        let raw_outputs = serde_json::from_slice::<BTreeMap<PathBuf, String>>(&nickel_output)
-            .context("failed to parse nickel export output, expecting a record of strings ({ _ | String })")?;
+        let raw_outputs = serde_json::from_slice::<BTreeMap<PathBuf, String>>(
+            &nickel_export_output,
+        )
+        .context(
+            "failed to parse nickel export output, expecting a record of strings ({ _ | String })",
+        )?;
         let outputs = TargetOutputs::build(self.outputs_dir.clone(), raw_outputs)
             .context("failed to build target outputs")?;
         Ok(outputs)
