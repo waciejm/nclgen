@@ -10,7 +10,7 @@ pub fn nickel_eval<'a>(
     let cmd = nickel_cmd();
 
     let mut command = Command::new(&cmd);
-    command.arg("export");
+    command.arg("eval");
 
     for import_path in import_paths {
         command.arg("--import-path");
