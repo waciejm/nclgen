@@ -1,17 +1,15 @@
+use std::path::PathBuf;
+
 use anyhow::Context;
 
-use crate::{cli::ProjectOptions, project::Project};
+use crate::project::Project;
 
 #[derive(Debug, clap::Args)]
-pub struct ImportsCommand {
-    #[command(flatten)]
-    project: ProjectOptions,
-}
+pub struct ImportsCommand {}
 
 impl ImportsCommand {
-    pub fn exec(self) -> anyhow::Result<()> {
-        let project =
-            Project::resolve(self.project.project, None).context("failed to resolve project")?;
+    pub fn exec(self, project: Option<PathBuf>) -> anyhow::Result<()> {
+        let project = Project::resolve(project, None).context("failed to resolve project")?;
         let import_dirs_strings = project
             .get_import_dirs()
             .iter()

@@ -1,12 +1,11 @@
+use std::path::PathBuf;
+
 use anyhow::Context;
 
-use crate::{cli::ProjectOptions, project::Project};
+use crate::project::Project;
 
 #[derive(Debug, clap::Args)]
 pub struct GenerateCommand {
-    #[command(flatten)]
-    project: ProjectOptions,
-    /// Preview what will be generated without modifying any files.
     #[arg(long)]
     preview: bool,
     /// Targets to generate. Will generate all targets if empty.
@@ -15,13 +14,13 @@ pub struct GenerateCommand {
 }
 
 impl GenerateCommand {
-    pub fn exec(self) -> anyhow::Result<()> {
+    pub fn exec(self, project: Option<PathBuf>) -> anyhow::Result<()> {
         let targets_filter = if self.targets.is_empty() {
             None
         } else {
             Some(self.targets.into_iter().collect())
         };
-        let outputs = Project::resolve(self.project.project, targets_filter.as_ref())
+        let outputs = Project::resolve(project, targets_filter.as_ref())
             .context("failed to resolve project")?
             .build_outputs()
             .context("failed to build project outputs")?;

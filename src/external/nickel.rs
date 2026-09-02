@@ -6,6 +6,7 @@ pub fn nickel_eval<'a>(
     import_paths: impl IntoIterator<Item = &'a Path>,
     inputs: impl IntoIterator<Item = &'a Path>,
     apply_contracts: impl IntoIterator<Item = &'a Path>,
+    field: Option<&str>,
 ) -> anyhow::Result<Vec<u8>> {
     let cmd = nickel_cmd();
 
@@ -24,6 +25,11 @@ pub fn nickel_eval<'a>(
     for apply_contract in apply_contracts {
         command.arg("--apply-contract");
         command.arg(apply_contract);
+    }
+
+    if let Some(field) = field {
+        command.arg("--field");
+        command.arg(field);
     }
 
     let nickel_result = command
@@ -48,7 +54,7 @@ pub fn nickel_eval<'a>(
 pub fn nickel_export<'a>(
     import_paths: impl IntoIterator<Item = &'a Path>,
     inputs: impl IntoIterator<Item = &'a Path>,
-    output_field: Option<&str>,
+    field: Option<&str>,
 ) -> anyhow::Result<Vec<u8>> {
     let cmd = nickel_cmd();
 
@@ -64,9 +70,9 @@ pub fn nickel_export<'a>(
         command.arg(input);
     }
 
-    if let Some(output_field) = output_field {
+    if let Some(field) = field {
         command.arg("--field");
-        command.arg(output_field);
+        command.arg(field);
     }
 
     let nickel_result = command

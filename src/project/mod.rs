@@ -171,8 +171,20 @@ impl Project {
         ProjectOutputs::build(&self.targets)
     }
 
+    pub fn debug_eval(&self, target_name: &str, field: Option<&str>) -> anyhow::Result<String> {
+        let target = self.targets.get(target_name);
+        match target {
+            Some(target) => target.debug_eval(field),
+            None => anyhow::bail!("no target named {}", target_name),
+        }
+    }
+
     pub fn get_import_dirs(&self) -> &BTreeSet<PathBuf> {
         &self.import_dirs
+    }
+
+    pub fn get_targets(&self) -> BTreeSet<String> {
+        self.targets.keys().cloned().collect()
     }
 }
 

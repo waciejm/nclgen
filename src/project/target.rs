@@ -92,6 +92,7 @@ impl ProjectTarget {
                     .map(PathBuf::as_path)
                     .chain(self.inputs.iter().map(PathBuf::as_path)),
                 self.eval_contracts.iter().map(PathBuf::as_path),
+                None,
             )
             .context("failed to evaluate before generating outputs")?;
         }
@@ -113,5 +114,19 @@ impl ProjectTarget {
         let outputs = TargetOutputs::build(self.outputs_dir.clone(), raw_outputs)
             .context("failed to build target outputs")?;
         Ok(outputs)
+    }
+
+    pub fn debug_eval(&self, field: Option<&str>) -> anyhow::Result<String> {
+        let output = nickel_eval(
+            self.import_dirs.iter().map(PathBuf::as_path),
+            self.common_inputs
+                .iter()
+                .map(PathBuf::as_path)
+                .chain(self.inputs.iter().map(PathBuf::as_path)),
+            [],
+            field,
+        )
+        .context("debug evalutaion failed")?;
+        Ok(String::from_utf8_lossy(&output).into_owned())
     }
 }
