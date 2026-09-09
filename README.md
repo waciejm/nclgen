@@ -11,6 +11,10 @@ which is a directory that contains a `ncl.gen` subdir.
 
 `nclgen imports` prints the import paths that `nclgen` adds to the evaluation.
 
+`nclgen targets` prints the list of available targets from the configuration.
+
+`nclgen debug` evaluates targets and prints the result.
+
 ## Example
 
 See `example` directory for a quick look at how a `nclgen` project works.
