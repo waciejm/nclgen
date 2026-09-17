@@ -43,11 +43,7 @@ pub fn nickel_eval<'a>(
         .with_context(|| format!("failed to run {:?} eval", cmd))?;
 
     if !nickel_result.status.success() {
-        if let Some(exit_code) = nickel_result.status.code() {
-            anyhow::bail!("nickel eval failed with exit code {}", exit_code);
-        } else {
-            anyhow::bail!("nickel eval failed without exit code")
-        };
+        anyhow::bail!("nickel eval failed ({})", nickel_result.status);
     }
 
     Ok(nickel_result.stdout)
@@ -84,11 +80,7 @@ pub fn nickel_export<'a>(
         .with_context(|| format!("failed to run {:?} export", cmd))?;
 
     if !nickel_result.status.success() {
-        if let Some(exit_code) = nickel_result.status.code() {
-            anyhow::bail!("nickel export failed with exit code {}", exit_code);
-        } else {
-            anyhow::bail!("nickel export failed without exit code")
-        };
+        anyhow::bail!("nickel export failed ({})", nickel_result.status);
     }
 
     Ok(nickel_result.stdout)
