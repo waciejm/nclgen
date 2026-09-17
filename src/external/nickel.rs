@@ -1,4 +1,8 @@
-use std::{ffi::OsString, path::Path, process::Command};
+use std::{
+    ffi::OsString,
+    path::Path,
+    process::{Command, Stdio},
+};
 
 use anyhow::Context;
 
@@ -32,15 +36,13 @@ pub fn nickel_eval<'a>(
         command.arg(field);
     }
 
+    command.stderr(Stdio::inherit());
+
     let nickel_result = command
         .output()
         .with_context(|| format!("failed to run {:?} eval", cmd))?;
 
     if !nickel_result.status.success() {
-        eprintln!(
-            "nickel eval error: {}",
-            String::from_utf8_lossy(&nickel_result.stderr),
-        );
         if let Some(exit_code) = nickel_result.status.code() {
             anyhow::bail!("nickel eval failed with exit code {}", exit_code);
         } else {
@@ -75,15 +77,13 @@ pub fn nickel_export<'a>(
         command.arg(field);
     }
 
+    command.stderr(Stdio::inherit());
+
     let nickel_result = command
         .output()
         .with_context(|| format!("failed to run {:?} export", cmd))?;
 
     if !nickel_result.status.success() {
-        eprintln!(
-            "nickel export error: {}",
-            String::from_utf8_lossy(&nickel_result.stderr),
-        );
         if let Some(exit_code) = nickel_result.status.code() {
             anyhow::bail!("nickel export failed with exit code {}", exit_code);
         } else {
